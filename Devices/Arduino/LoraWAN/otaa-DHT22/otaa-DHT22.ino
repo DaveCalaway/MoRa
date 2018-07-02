@@ -2,11 +2,11 @@
    Edited by DaveCalaway
    Copyright (c) 2015 Thomas Telkamp and Matthijs Kooijman
 
-   This example sends a valid LoRaWAN packet with DHT11/22 payload
+   This example sends, every 60s, a valid LoRaWAN packet with DHT11/22 payload
    or a string of byte ( terminated with 0 ) using frequency
    and encryption settings matching a generic Lora Network ( example LoraServe ).
 
-   This sketch works with the "SimpleDHT" library.
+   This sketch works with the "DHT.h" library.
 
    This uses OTAA (Over-the-air activation), where where a DevEUI and
    application key is configured, which are used in an over-the-air
@@ -30,16 +30,16 @@
 #include <lmic.h>
 #include <hal/hal.h>
 #include <SPI.h>
-#include <SimpleDHT.h>
+#include "DHT.h"
 
 // -------------- DHT def --------------
-int pinDHT11 = 10;
-SimpleDHT11 dht11;
-// SimpleDHT22 dht22;
-int previousTime = 1500; // DHT11 sampling rate is 1HZ.
-//int previousTime = 2500; // DHT22 sampling rate is 0.5HZ.
-byte temperature = 0;
-byte humidity = 0;
+int DHTPIN = 10;
+//#define DHTTYPE DHT11   // DHT 11
+#define DHTTYPE DHT22   // DHT 22  (AM2302), AM2321
+//#define DHTTYPE DHT21   // DHT 21 (AM2301)
+int interval = 2000;
+long previousTime = 0;
+DHT dht(DHTPIN, DHTTYPE);
 // ------------------------------------------
 
 //----------------------- NO LONGER NEEDED ---------------------------------
@@ -69,7 +69,7 @@ void os_getDevKey (u1_t* buf) {
   memcpy_P(buf, APPKEY, 16);
 }
 
-static uint8_t mydata[] = {temperature, humidity, 0x00};
+static uint8_t mydata[] = {0x00, 0x00, 0x00};
 static osjob_t sendjob;
 
 // Schedule TX every this many seconds (might become longer due to duty
@@ -155,6 +155,12 @@ void onEvent (ev_t ev) {
 }
 
 void do_send(osjob_t* j) {
+  //------------------ WRITE YOUR CODE HERE -------------------
+  if ( millis() - previousTime > interval ) {
+    previousTime = millis();
+    dht_read();
+  }
+// ------------------------------------------------------------
   // Check if there is not a current TX/RX job running
   if (LMIC.opmode & OP_TXRXPEND) {
     Serial.println(F("OP_TXRXPEND, not sending"));
@@ -167,7 +173,7 @@ void do_send(osjob_t* j) {
 }
 
 void setup() {
-  pinMode(pinDHT11, OUTPUT);
+  dht.begin();
   Serial.begin(9600);
   Serial.println(F("Starting"));
 
@@ -182,9 +188,4 @@ void setup() {
 
 void loop() {
   os_runloop_once();
-
-  if ( millis() > previousTime ) {
-    previousTime = millis();
-    dht(temperature, humidity);
-  }
 }
