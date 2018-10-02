@@ -1,1 +1,1 @@
-Directory Immaging documentazione
+Directory immagini documentazione
