@@ -1,2 +1,2 @@
 # MoRa
- LoRa IoT Playground - 1
+ LoRa IoT Playground
