@@ -1,7 +1,8 @@
 /*******************************************************************************
    Edited for ESP32 Heltec LoRa v2 + Debug over Oled
+   Remeber to select the specific board from the Board Manager!
    DaveCalaway
-   
+
    Copyright (c) 2015 Thomas Telkamp and Matthijs Kooijman
 
    Permission is hereby granted, free of charge, to anyone
@@ -50,7 +51,7 @@
 #define DEBUG_PRINTLN(x)     Serial.println (x)
 #endif
 
-// Oled definition 
+// Oled definition
 U8X8_SSD1306_128X64_NONAME_SW_I2C display(/* clock=*/ 15, /* data=*/ 4, /* reset=*/ 16);
 byte row = 0;
 
