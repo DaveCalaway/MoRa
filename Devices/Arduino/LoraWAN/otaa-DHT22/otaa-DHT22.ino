@@ -1,5 +1,6 @@
 /*******************************************************************************
    Edited by DaveCalaway
+   derived from:
    Copyright (c) 2015 Thomas Telkamp and Matthijs Kooijman
 
    This example sends, every 60s, a valid LoRaWAN packet with DHT11/22 payload
@@ -181,6 +182,8 @@ void setup() {
   os_init();
   // Reset the MAC state. Session and pending data transfers will be discarded.
   LMIC_reset();
+
+  LMIC_setClockError(MAX_CLOCK_ERROR * 2 / 100);
 
   // Start job (sending automatically starts OTAA too)
   do_send(&sendjob);
